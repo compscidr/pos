@@ -5,6 +5,7 @@
 #include "screen.h"
 #include "cli.h"
 #include "kb.h"
+#include "pci.h"
 
 int main(void) {
   
@@ -31,6 +32,11 @@ int main(void) {
   
   /* Enable interrupts */
   asm volatile ("sti");	
+  
+  /* Scan the PCI bus for devices we recognize and init the driver for each device */
+  print_string("Scanning PCI Bus for devices...\n");
+  pci_init();
+  print_string("Scanning complete.\n");
   
   /* start the command line interface (CLI) */
   create_task(cli_main);	
