@@ -1,4 +1,5 @@
 *.o
 *.img
 *.bin
+*.dat
 build
