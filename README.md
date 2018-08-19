@@ -27,7 +27,7 @@ following packages:
 ```make``` will compile the first stage bootload
 
 ## Testing in QEMU
-```qemu-system-i386 -drive format=raw,file=build/floppy.img -net nic,model=pcnet -net user```
+```qemu-system-i386 -fda build/floppy.img -net nic,model=pcnet -net user```
 
 ## Testing in Bochs
 ```bochs```
