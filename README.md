@@ -39,6 +39,7 @@ bootloader using the legacy bios.
 
 ## Memory Map
 Stage 1:
+
 | Address | Function  | Size  |
 |---|---|---|
 |0x0000 - 0x04FF | Reserved | 1280 bytes |
@@ -51,6 +52,7 @@ Stage 1:
 |0xC000 - 0xFFFF | OS Stack | 16384 bytes |
 
 Stage 2 and Beyond:
+
 | Address | Function  | Size  |
 |---|---|---|
 |0x0000 - 0x04FF | Reserved | 1280 bytes |
