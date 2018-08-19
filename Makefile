@@ -69,6 +69,9 @@ kernel.bin: ${OBJ} src/asm/interrupt.s
 	@nasm src/asm/interrupt.s -o $(BUILDDIR)/interrupt.o -f elf32
 	@ld -m elf_i386 -o $(BUILDDIR)/KERNEL.BIN -Ttext 0x1400 -e main src/kernel.o $(BUILDDIR)/interrupt.o $(FILTEROBJ)
 	@objcopy -R .note -R .comment -S -O binary $(BUILDDIR)/KERNEL.BIN
+	@rm $(OBJ)
+	@rm -rf $(BUILDDIR)/interrupt.o
+	@rm -rf src/asm/interrupt.o
 	@echo "done"
 
 # Here we mount the floppy.img file which only has stage1 atm. We can then let Ubuntu treat
@@ -86,3 +89,4 @@ oscopy: $(BUILDDIR)/STAGE2.BIN
 
 clean:
 	@rm -rf $(BUILDDIR)
+	@rm -rf $(CLEANOBJ)
