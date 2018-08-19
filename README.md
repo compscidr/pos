@@ -30,9 +30,10 @@ following packages:
 ```qemu-system-i386 -drive format=raw,file=build/floppy.img -net nic,model=pcnet -net user```
 
 ## Testing in Bochs
+```bochs```
 When you run bochs, it will start and wait for you to type ```c``` to
 continue execution. At this point, it will start loading the 1st stage
 bootloader using the legacy bios.
-```bochs```
 
-J
+## Memory Map
+
