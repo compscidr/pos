@@ -3,6 +3,8 @@
 #include "task.h"
 #include "timer.h"
 #include "screen.h"
+#include "cli.h"
+#include "kb.h"
 
 int main(void) {
   
@@ -27,9 +29,14 @@ int main(void) {
   timer_init();
   print_status(1);
   
-  asm volatile ("sti");	/* Enable interrupts */
+  /* Enable interrupts */
+  asm volatile ("sti");	
+  
+  /* start the command line interface (CLI) */
+  create_task(cli_main);	
+  kb_init();
   
   while (1) {
-    
+    __asm__("hlt");
   }
 }
