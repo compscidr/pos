@@ -5,13 +5,30 @@
 # requires: nasm
 # optional for emulation: bochs bochs-sdl
 ASM = nasm
+IDIR = src/include
+CC = gcc
+LD = ld
+
+# some of these flags are required so that libraries are not included
+# for instance, nostartfiles, nodefaultlibs...but others may be removed
+CFLAGS = -I $(IDIR) -m32 -c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
+
+# finds all of the source files so that we don't need to manually specify when new sources are added
+SRC = $(shell find . -name *.c)
+CLEANOBJ = $(shell find . -name *.o)
+OBJ = $(SRC:%.c=%.o)
+
+# filter out kernel.o so that we can manually put it at front of list for linking
+# (otherwise main is not put at correct memory address)
+KERNELOBJ = ./src/kernel.o
+FILTEROBJ = $(filter-out $(KERNELOBJ), $(OBJ))
 
 # directory name where we will mount a "virtual" floppy for creating OS 
 # image
 BUILDDIR = build
 FLOPPYDIR = floppy
 
-all: prep stage1 stage2 oscopy
+all: prep stage1 stage2 kernel oscopy
 
 # prepares the directory where we will mount and create our OS image 
 # filesystem
@@ -36,6 +53,24 @@ stage2: src/boot/stage2.s
 	@nasm src/boot/stage2.s -f bin -o $(BUILDDIR)/STAGE2.BIN
 	@echo "done".
 
+# this compiles all c source files into object files
+%.o: %.c
+	$(CC) -c $< -o $@ $(CFLAGS)
+
+# compile the kernel! :D
+kernel: kernel.bin
+
+# kernel(main) is loaded at 0x1400 - note the order of linking here: kernel.o must be first!
+# also we need to remove the note and comment section from the elf and switch to a flat binary (not quite sure why atm - investigate in future?)
+# util.s contains some assembly for loading the gdt, handing exceptions and irqs that cannot
+# be done easily in c, so we link them into the kernel here manually
+kernel.bin: ${OBJ} src/asm/interrupt.s
+	@echo -n "Compiling kernel..."
+	@nasm src/asm/interrupt.s -o $(BUILDDIR)/interrupt.o -f elf32
+	@ld -m elf_i386 -o $(BUILDDIR)/KERNEL.BIN -Ttext 0x1400 -e main src/kernel.o $(BUILDDIR)/interrupt.o $(FILTEROBJ)
+	@objcopy -R .note -R .comment -S -O binary $(BUILDDIR)/KERNEL.BIN
+	@echo "done"
+
 # Here we mount the floppy.img file which only has stage1 atm. We can then let Ubuntu treat
 # it as a FAT12 filesystem and copy STAGE2.BIN and KERNEL.BIN (and any other files in the future)
 # onto the image just like it was a real floppy or hard disk.
@@ -43,7 +78,7 @@ oscopy: $(BUILDDIR)/STAGE2.BIN
 	@echo -n "Copying OS files to disk image..."
 	@sudo mount $(BUILDDIR)/floppy.img $(BUILDDIR)/floppy -o loop
 	@sudo cp $(BUILDDIR)/STAGE2.BIN $(BUILDDIR)/floppy
-#	@sudo cp $(BUILDDIR)/KERNEL.BIN $(BUILDDIR)/floppy
+	@sudo cp $(BUILDDIR)/KERNEL.BIN $(BUILDDIR)/floppy
 	@sleep 2
 	@sudo umount -d $(BUILDDIR)/floppy
 	@echo "done."
