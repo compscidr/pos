@@ -28,6 +28,7 @@ following packages:
 
 ## Testing in QEMU
 ```qemu-system-i386 -fda build/floppy.img -net nic,model=pcnet -net user```
+```qemu-system-i386 -fda build/floppy.img -net nic,model=rtl8139 -net user,id=u1 -object filter-dump,id=f1,netdev=u1,file=networkdump.dat```
 
 ## Testing in Bochs
 ```bochs```
