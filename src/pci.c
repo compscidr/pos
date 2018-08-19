@@ -1,29 +1,24 @@
 #include "common.h"
 #include "pci.h"
 #include "screen.h"
-//#include "dev/rtl8139.h"
+#include "dev/rtl8139.h"
 //#include "dev/pcnet.h"
 //#include "dev/i825xx.h"
 
 unsigned long int pci_config_read(unsigned short int bus, unsigned short int device, unsigned short int func, unsigned int content);
 
-void pci_init(void)
-{
+void pci_init(void) {
   unsigned short int bus, slot, function;
   unsigned int vendor_id;
   int count = 0;
     
-  for(bus = 0; bus < PCI_MAX_BUS; bus++)
-  {
-    for(slot = 0; slot < PCI_MAX_DEVICES; slot++)
-    {
-      for(function = 0; function < PCI_MAX_FUNCTIONS; function++)
-      {
+  for(bus = 0; bus < PCI_MAX_BUS; bus++) {
+    for(slot = 0; slot < PCI_MAX_DEVICES; slot++) {
+      for(function = 0; function < PCI_MAX_FUNCTIONS; function++) {
         vendor_id = pci_config_read(bus, slot, function, PCI_VENDOR_ID);
         
         //check to make sure vendor_id != all ones, this means no device present
-        if(vendor_id && ((vendor_id & 0xFFFF) != 0xFFFF))
-        {
+        if(vendor_id && ((vendor_id & 0xFFFF) != 0xFFFF)) {
           struct pci_device device;
           device.bus = bus;
           device.slot = slot;
@@ -50,17 +45,17 @@ void pci_init(void)
           print_string("\n");
           count++;
           
-          /*
-          if(device.device_id == 0x8139)
+          if(device.device_id == 0x8139) {
             install_rtl8139(&device);
-          else if(device.device_id == 0x2000)
-            install_pcnet(&device);
-          else if(device.device_id == 0x100e)
-            install_i825xx(&device);
-          else
-          {
-            if(device.device_id != 0xFFFF)
-            {
+          }
+          else if(device.device_id == 0x2000) {
+            //install_pcnet(&device);
+          }
+          else if(device.device_id == 0x100e) {
+            //install_i825xx(&device);
+          }
+          else {
+            if(device.device_id != 0xFFFF) {
               char temp[33] = {0};
               print_string("UNKNOWN DEV - ");
               print_string(itoa(vendor_id & 0xFFFF, temp, 16));
@@ -68,8 +63,7 @@ void pci_init(void)
               print_string(itoa(device.device_id, temp, 16));
               print_string("\n");
             }
-          }*/
-              
+          }
         }
         else
           break;

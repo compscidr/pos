@@ -6,6 +6,8 @@
 #include "cli.h"
 #include "kb.h"
 #include "pci.h"
+#include "net/ip.h"
+#include "net/udp.h"
 
 int main(void) {
   
@@ -16,6 +18,9 @@ int main(void) {
   /* Set up pointer to screen memory, init the cursors */
   screen_init();
   screen_clear();
+  
+  ipv4_init();
+	udp_init();
   
   /* Create the table of exception and interrupt functions */
   print_string("Setting Up Interrupts...");

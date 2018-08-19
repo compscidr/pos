@@ -1,8 +1,8 @@
 #include "screen.h"
 #include "kb.h"
 #include "mm.h"
-//#include "net.h"
-//#include "net/dhcp.h"
+#include "net.h"
+#include "net/dhcp.h"
 
 void cli_main(void)
 {
@@ -29,10 +29,10 @@ void cli_main(void)
     else if(strcmp(buffer,"freemem")==0)
       display_free_bytes();
     else if(strcmp(buffer,"dhcp")==0) {
-      //dhcp_discover();
+      dhcp_discover();
     }      
     else if(strcmp(buffer,"ip")==0) {
-      //ip();
+      ip();
     }
     else
       print_string("Unknown command. Please try again. \n");
