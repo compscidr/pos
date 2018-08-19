@@ -35,7 +35,7 @@ void cli_main(void)
       //ip();
     }
     else
-      print_string("Unknown command");
+      print_string("Unknown command. Please try again. \n");
     
     __asm__("hlt");
   }
