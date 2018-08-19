@@ -55,7 +55,7 @@ stage2: src/boot/stage2.s
 
 # this compiles all c source files into object files
 %.o: %.c
-	$(CC) -c $< -o $@ $(CFLAGS)
+	@$(CC) -c $< -o $@ $(CFLAGS)
 
 # compile the kernel! :D
 kernel: kernel.bin
