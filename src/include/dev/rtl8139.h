@@ -3,10 +3,11 @@
 
 #include "pci.h"
 
-#define NUM_TX_DESC 4
-#define TX_BUF_SIZE 1536
-#define TX_DMA_BURST 4
-#define ETH_ZLEN 60
+#define NUM_TX_DESC     4
+#define TX_BUF_SIZE     1536
+#define TX_DMA_BURST    4
+#define RX_BUFFER_SIZE  65536 //see https://wiki.osdev.org/RTL8139
+#define ETH_ZLEN        60
 
 enum RTL8139_registers {
   ChipTxStatus = 0x10,
@@ -46,6 +47,18 @@ enum RTL8139_rx_mode_bits {
   AcceptBroadcast = 0x08,
   AcceptMyPhy = 0x02,
   AcceptAllPhy = 0x01,
+};
+
+enum RxStatusBits {
+  RxStatusOK  = 0x0001,
+  RxBadAlign  = 0x0002, 
+  RxCRCErr    = 0x0004,
+  RxTooLong   = 0x0008, 
+  RxRunt      = 0x0010, 
+  RxBadSymbol = 0x0020, 
+  RxBroadcast = 0x2000,
+  RxPhysical  = 0x4000, 
+  RxMulticast = 0x8000, 
 };
 
 void install_rtl8139(struct pci_device * device);
