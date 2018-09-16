@@ -11,7 +11,7 @@ LD = ld
 
 # some of these flags are required so that libraries are not included
 # for instance, nostartfiles, nodefaultlibs...but others may be removed
-CFLAGS = -I $(IDIR) -m32 -c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
+CFLAGS = -I $(IDIR) -m32 -c -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
 
 # finds all of the source files so that we don't need to manually specify when new sources are added
 SRC = $(shell find . -name *.c)
