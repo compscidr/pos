@@ -68,11 +68,12 @@ void eth_send_frame(char * data, unsigned short length, unsigned char * destinat
 
 void eth_broadcast(unsigned char * data, unsigned short length, unsigned short protocol) {
   struct ethernet_frame frame;
-  memset( & frame.destination_mac48_address, 0xff, 6);
+  memset( &frame.destination_mac48_address, 0xff, 6);
   rtl8139_get_mac48_address(frame.source_mac48_address);
   frame.ethertype = htons(protocol);
   unsigned char * buffer = malloc(length + sizeof(struct ethernet_frame));
   memcpy(buffer, & frame, sizeof(struct ethernet_frame));
   memcpy(buffer + sizeof(struct ethernet_frame), data, length);
+  
   rtl8139_send_packet(buffer, length + sizeof(struct ethernet_frame));
 }
