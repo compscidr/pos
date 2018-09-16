@@ -13,28 +13,28 @@
 //tested with a ddwrt v24 router
 enum dhcp_option_type {
   DHCP_PAD = 0,
-    DHCP_SUBNET = 1,
-    DHCP_ROUTER = 3,
-    DHCP_DNS = 6,
-    DHCP_DOMAIN = 15,
-    DHCP_BROADCAST = 28,
-    DHCP_IP_REQUEST = 50,
-    DHCP_LEASE_TIME = 51,
-    DHCP_MSG = 53,
-    DHCP_SERVER = 54,
-    DHCP_RENEW_TIME = 58,
-    DHCP_REBIND = 59,
+  DHCP_SUBNET = 1,
+  DHCP_ROUTER = 3,
+  DHCP_DNS = 6,
+  DHCP_DOMAIN = 15,
+  DHCP_BROADCAST = 28,
+  DHCP_IP_REQUEST = 50,
+  DHCP_LEASE_TIME = 51,
+  DHCP_MSG = 53,
+  DHCP_SERVER = 54,
+  DHCP_RENEW_TIME = 58,
+  DHCP_REBIND = 59,
 };
 
 enum dhcp_msg_value {
   DHCP_DISCOVER = 1,
-    DHCP_OFFER = 2,
-    DHCP_REQUEST = 3,
-    DHCP_DECLINE = 4,
-    DHCP_ACK = 5,
-    DHCP_NACK = 6,
-    DHCP_RELEASE = 7,
-    DHCP_INFORM = 8,
+  DHCP_OFFER = 2,
+  DHCP_REQUEST = 3,
+  DHCP_DECLINE = 4,
+  DHCP_ACK = 5,
+  DHCP_NACK = 6,
+  DHCP_RELEASE = 7,
+  DHCP_INFORM = 8,
 };
 
 struct dhcp_option {
