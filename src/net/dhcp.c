@@ -132,9 +132,9 @@ void dhcp_discover(void) {
   }
 
   struct dhcp_packet d;
-  memcpy( & d, buffer, sizeof(d));
+  memcpy( &d, buffer, sizeof(d));
 
-  unsigned char * pointer = & d.options[0];
+  unsigned char * pointer = &d.options[0];
   struct dhcp_option option = dhcp_get_option(pointer);
   if (option.type == DHCP_MSG) {
     print_string("  DHCP MSG: ");
@@ -152,7 +152,7 @@ void dhcp_discover(void) {
 
         dhcp.options[3] = DHCP_IP_REQUEST;
         dhcp.options[4] = 0x04; //length = 4
-        memcpy( & dhcp.options[5], d.yiaddr, 4);
+        memcpy( &dhcp.options[5], d.yiaddr, 4);
 
         dhcp.options[9] = 0xFF; //end
       } else if (option.data[0] == (unsigned char) DHCP_ACK)
@@ -164,17 +164,17 @@ void dhcp_discover(void) {
   }
 
   ////part 2: request #2, should ack after
-
-  udp_broadcast((unsigned char * ) & dhcp, sizeof(dhcp), 68, 67);
+  udp_broadcast((unsigned char * ) &dhcp, sizeof(dhcp), 68, 67);
   size = udp_listen(68, buffer, 1024);
+  
   //copy that data into the dhcp packet structure
   if (size < (int) sizeof(struct dhcp_packet)) {
     print_string("MALFORMED DHCP RESPONSE\n");
     return;
   }
-  memcpy( & d, buffer, sizeof(d));
+  memcpy( &d, buffer, sizeof(d));
 
-  pointer = & d.options[0];
+  pointer = &d.options[0];
   option = dhcp_get_option(pointer);
   if (option.type == DHCP_MSG) {
     print_string("  DHCP MSG: ");
