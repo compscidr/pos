@@ -121,7 +121,8 @@ void dhcp_discover(void) {
   print_string("DHCP DISCOVER (Will wait forever if net is down, or driver broken)\n");
 
   ///////part 1: request, should offer afterwards
-  udp_broadcast((unsigned char * ) & dhcp, sizeof(dhcp), 68, 67);
+  udp_bind(68);
+  udp_broadcast((unsigned char * )&dhcp, sizeof(dhcp), 68, 67);
   int size = udp_listen(68, buffer, 1024);
 
   //copy that data into the dhcp packet structure
