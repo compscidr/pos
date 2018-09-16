@@ -43,18 +43,30 @@ void pci_config_write_word(unsigned short int bus, unsigned short int device, un
 #define PCI_MIN_GRANT           0x3E
 #define PCI_MAX_LATENCY         0x3F
 
-#define PCI_CMD_BUSMASTEREN     0x0004
+#define PCI_CMD_BUSMASTER       0x4
+
+enum
+{
+    PCI_MMIO, PCI_IO, PCI_INVALIDBAR
+};
+
+struct pci_bar {
+  unsigned long base_address;
+  unsigned int  memory_size;
+  unsigned char memory_type;
+};
 
 struct pci_device
 {
   unsigned short bus, slot, function;
   unsigned int device_id, vendor_id, status, command;
   unsigned char class_id, subclass_id, prog_if, revision_id, bist, header_type, latency_timer, cache_line_size;
-  unsigned long bar[6], cardbus;
+  unsigned long cardbus;
   unsigned int subsystem_id, subsystem_vendor_id;
   unsigned long exp_rom_bar;
   unsigned char capabilities_pointer;
   unsigned char max_latency, min_grant, interrupt_line;
+  struct pci_bar bar[6];
 };
 
 #endif
