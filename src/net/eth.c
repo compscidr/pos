@@ -19,37 +19,32 @@ struct ethernet_frame {
  */
 void eth_receive_frame(char * data, unsigned short length) {
   char temp[40];
-  //print_string("ETH RECV - ");
-  //print_string(itoa(length, temp, 10));
-  //print_string(" bytes:\n");
+  /*
+  print_string("ETH RECV - ");
+  print_string(itoa(length, temp, 10));
+  print_string(" bytes:\n");
+  hd((unsigned long)data, (unsigned long)data+16);
+  */
 
   if (length >= sizeof(struct ethernet_frame)) {
 
     struct ethernet_frame frame;
-    memcpy( & frame, data, sizeof(struct ethernet_frame));
+    memcpy(&frame, data, sizeof(struct ethernet_frame));
     frame.ethertype = ntohs(frame.ethertype);
 
     switch (frame.ethertype) {
     case 0x0800:
-      //print_string("Source: ");
-      //int i = 0;
-      //while(i < 6)
-      //{
-      //	//print_char(frame.source_mac48_address[i] + '0');
-      //	print_char('F');
-      //	i++;
-      //}
-      //print_string("\n");
-      ipv4_receive_packet( & data[sizeof(struct ethernet_frame)], length - sizeof(struct ethernet_frame));
+      print_string("IPv4 Packet\n");
+      ipv4_receive_packet( &data[sizeof(struct ethernet_frame)], length - sizeof(struct ethernet_frame));
       break;
 
     case 0x86dd:
-      //print_string("IPv6 Packet\n");
+      print_string("IPv6 Packet\n");
       break;
 
     case 0x0806:
+      print_string("ARP Packet\n");
       //arp_receive_packet(&data[sizeof(struct ethernet_frame)], length - sizeof(struct ethernet_frame));
-      //print_string("ARP Packet\n");
       break;
 
     default:
