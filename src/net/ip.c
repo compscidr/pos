@@ -27,10 +27,12 @@ void ipv4_init(void)
 
 void ipv4_receive_packet(char * data, unsigned short length)
 {
-  //char temp[40];
-  //print_string("IPv4 RECV - ");
-  //print_string(itoa(length, temp, 10));
-  //print_string(" bytes:\n");
+  /*
+  char temp[40];
+  print_string("IPv4 RECV - ");
+  print_string(itoa(length, temp, 10));
+  print_string(" bytes\n");
+  */
     
   if(length < sizeof(struct ipv4_packet_header))
   {
@@ -44,19 +46,19 @@ void ipv4_receive_packet(char * data, unsigned short length)
   switch (packet.protocol)
   {
     case 1:		//ICMP
-      //print_string("ICMP Packet\n");
+      print_string("ICMP Packet\n");
     break;
     case 2:		//IGMP
-      //print_string("IGMP Packet\n");
+      print_string("IGMP Packet\n");
     break;
     case 6:		//TCP
+      print_string("TCP Packet\n");
       //tcp_receive_packet(data[sizeof(struct ipv4_packet_header)], length - sizeof(struct ipv4_packet_header));
-      //print_string("TCP Packet\n");
     break;
       
     case 17:		//UDP
+      print_string("UDP Packet\n");
       udp_receive_packet(&data[sizeof(struct ipv4_packet_header)], length - sizeof(struct ipv4_packet_header));
-      //print_string("UDP Packet\n");
     break;
 
     default:
