@@ -7,6 +7,8 @@
 
 unsigned long int pci_config_read(unsigned short int bus, unsigned short int device, unsigned short int func, unsigned int content);
 
+//todo: make a list or structure of pci devices for each one we find
+
 void pci_init(void) {
   unsigned short int bus, slot, function;
   unsigned int vendor_id;
@@ -14,11 +16,19 @@ void pci_init(void) {
     
   for(bus = 0; bus < PCI_MAX_BUS; bus++) {
     for(slot = 0; slot < PCI_MAX_DEVICES; slot++) {
-      for(function = 0; function < PCI_MAX_FUNCTIONS; function++) {
+      unsigned char header_type = pci_config_read(bus, slot, 0, PCI_HEADER_TYPE);
+      unsigned char function_count = PCI_MAX_FUNCTIONS;
+      // Bit 7 in header type (Bit 23-16) --> multifunctional
+      if(!(header_type & 0x80)) {
+        function_count = 1; // --> not multifunctional, only function 0 used
+      }
+      
+      for(function = 0; function < function_count ; function++) {
         vendor_id = pci_config_read(bus, slot, function, PCI_VENDOR_ID);
         
         //check to make sure vendor_id != all ones, this means no device present
         if(vendor_id && ((vendor_id & 0xFFFF) != 0xFFFF)) {
+          
           struct pci_device device;
           device.bus = bus;
           device.slot = slot;
@@ -30,12 +40,23 @@ void pci_init(void) {
           device.prog_if = pci_config_read(bus, slot, function, PCI_PROG_IF);
           device.revision_id = pci_config_read(bus, slot, function, PCI_REVISION_ID);
           device.interrupt_line = pci_config_read(bus, slot, function, PCI_INTERRUPT_LINE);
-          device.bar[0] = pci_config_read(bus, slot, function, PCI_BAR0);
-          device.bar[1] = pci_config_read(bus, slot, function, PCI_BAR1);
-          device.bar[2] = pci_config_read(bus, slot, function, PCI_BAR2);
-          device.bar[3] = pci_config_read(bus, slot, function, PCI_BAR3);
-          device.bar[4] = pci_config_read(bus, slot, function, PCI_BAR4);
-          device.bar[5] = pci_config_read(bus, slot, function, PCI_BAR5);
+          
+          //read the BARs
+          for(unsigned char i = 0; i < 6; i++) {
+            device.bar[i].base_address = pci_config_read(bus, slot, function, PCI_BAR0 + i*4);
+            if(device.bar[i].base_address) {
+              device.bar[i].memory_type = device.bar[i].base_address & 0x01;
+              if(device.bar[i].memory_type == PCI_MMIO) {
+                //Memory Mapped I/O: https://en.wikipedia.org/wiki/Memory-mapped_I/O
+                device.bar[i].base_address &= 0xFFFFFFF0;
+              } else {
+                //PCI Port Mapped I/O: https://en.wikipedia.org/wiki/Memory-mapped_I/O
+                device.bar[i].base_address &= 0xFFFC;
+              }
+            } else {
+              device.bar[i].memory_type = PCI_INVALIDBAR;
+            }
+          }
           
           char temp[33] = {0};
           print_string("Found device - ");

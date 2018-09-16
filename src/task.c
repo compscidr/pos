@@ -49,22 +49,22 @@ void create_task(void (*t)())
   stack = (unsigned int*)new_thread->esp0;
   
   *--stack = 0x0202;					/* EFLAGS */
-  *--stack = 0x08;					/* CS - code seg */
-  *--stack = (unsigned int)t;			/* EIP */
+  *--stack = 0x08;            /* CS - code seg */
+  *--stack = (unsigned int)t;	/* EIP */
 
-  *--stack = 0;						/* EDI */
-  *--stack = 0;						/* ESI */
-  *--stack = 0;						/* EBP */
-  *--stack = 0;						/* Offset */
-  *--stack = 0;						/* EBX */
-  *--stack = 0;						/* EDX */
-  *--stack = 0;						/* ECX */
-  *--stack = 0;						/* EAX */
+  *--stack = 0;               /* EDI */
+  *--stack = 0;						    /* ESI */
+  *--stack = 0;						    /* EBP */
+  *--stack = 0;						    /* Offset */
+  *--stack = 0;						    /* EBX */
+  *--stack = 0;						    /* EDX */
+  *--stack = 0;						    /* ECX */
+  *--stack = 0;						    /* EAX */
 
-  *--stack = 0x10;					/* DS */
-  *--stack = 0x10; 					/* ES */
-  *--stack = 0x10;					/* FS */
-  *--stack = 0x10;					/* GS */
+  *--stack = 0x10;					  /* DS */
+  *--stack = 0x10; 					  /* ES */
+  *--stack = 0x10;					  /* FS */
+  *--stack = 0x10;					  /* GS */
     
   new_thread->esp0 = (unsigned int)stack;
   struct thread * traverse = thread_list;
