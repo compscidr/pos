@@ -83,7 +83,7 @@ struct dhcp_option dhcp_get_option(unsigned char * option) {
 void dhcp_discover(void) {
   char buffer[1024];
   struct dhcp_packet dhcp;
-  memset( & dhcp, 0, sizeof(dhcp)); //init to all zero
+  memset( &dhcp, 0, sizeof(dhcp)); //init to all zero
 
   dhcp.opcode = 1;              //BOOTREQUEST
   dhcp.htype = 1;               //ethernet
@@ -92,17 +92,17 @@ void dhcp_discover(void) {
   dhcp.xid = htonl(0xb00b1e5);  //transmission id (should be random)
   dhcp.secs = htons(0x00);      //seconds since start of bootp
   dhcp.zero = htons(0x00);      //always zero
-  memset( & dhcp.ciaddr, 0, 4); //client IP (zero if unknown)
-  memset( & dhcp.yiaddr, 0, 4); //client IP returned from server
-  memset( & dhcp.siaddr, 0, 4); //server IP returned from server
-  memset( & dhcp.giaddr, 0, 4); //gateway IP, not used (used for cross-gw boot)
+  memset( &dhcp.ciaddr, 0, 4); //client IP (zero if unknown)
+  memset( &dhcp.yiaddr, 0, 4); //client IP returned from server
+  memset( &dhcp.siaddr, 0, 4); //server IP returned from server
+  memset( &dhcp.giaddr, 0, 4); //gateway IP, not used (used for cross-gw boot)
 
   //todo make this section not dependent on rtl8139!
   //client hardware addr from RTL8139
-  rtl8139_get_mac48_address( & dhcp.chaddr);
+  rtl8139_get_mac48_address( &dhcp.chaddr);
 
-  memset( & dhcp.sname, 0, 64); //optional server hostname
-  memset( & dhcp.file, 0, 128); //boot file or null in bootrequest
+  memset( &dhcp.sname, 0, 64); //optional server hostname
+  memset( &dhcp.file, 0, 128); //boot file or null in bootrequest
 
   dhcp.magic = htonl(0x63825363);
 
