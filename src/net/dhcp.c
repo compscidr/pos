@@ -126,13 +126,20 @@ void dhcp_discover(void) {
   int size = udp_listen(68, buffer, 1024);
 
   //copy that data into the dhcp packet structure
-  if (size < (int) sizeof(struct dhcp_packet)) {
+  if (size > (int) sizeof(struct dhcp_packet)) {
     print_string("MALFORMED DHCP RESPONSE\n");
+    print_string("EXPECTING: ");
+    char temp[33] = {
+        0
+    };
+    print_string(itoa(sizeof(struct dhcp_packet), temp, 10));
+    print_string(" GOT: ");
+    print_string(itoa(size, temp, 10));
     return;
   }
 
   struct dhcp_packet d;
-  memcpy( &d, buffer, sizeof(d));
+  memcpy( &d, buffer, size);
 
   unsigned char * pointer = &d.options[0];
   struct dhcp_option option = dhcp_get_option(pointer);
@@ -168,11 +175,11 @@ void dhcp_discover(void) {
   size = udp_listen(68, buffer, 1024);
   
   //copy that data into the dhcp packet structure
-  if (size < (int) sizeof(struct dhcp_packet)) {
+  if (size > (int) sizeof(struct dhcp_packet)) {
     print_string("MALFORMED DHCP RESPONSE\n");
     return;
   }
-  memcpy( &d, buffer, sizeof(d));
+  memcpy( &d, buffer, size);
 
   pointer = &d.options[0];
   option = dhcp_get_option(pointer);
