@@ -1,5 +1,6 @@
 #include "common.h"
 #include "pci.h"
+#include "fs/ide.h"
 #include "screen.h"
 #include "dev/rtl8139.h"
 //#include "dev/pcnet.h"
@@ -65,7 +66,18 @@ void pci_init(void) {
           print_string(itoa(device.device_id, temp, 16));
           print_string("\n");
           count++;
-          
+
+          if(device.class_id == 0x01) {
+            if (device.subclass_id = 0x01) {
+              // https://wiki.osdev.org/PCI_IDE_Controller
+              print_string("  FOUND IDE STORAGE CONTROLLER\n");
+
+              // apparently this will only support parallel IDE
+              // todo: look into these values more
+              ide_initialize(0x1F0, 0x3F6, 0x170, 0x376, 0x000);
+            }
+          }
+
           if(device.device_id == 0x8139) {
             install_rtl8139(&device);
           }
@@ -74,8 +86,7 @@ void pci_init(void) {
           }
           else if(device.device_id == 0x100e) {
             //install_i825xx(&device);
-          }
-          else {
+          } else {
             if(device.device_id != 0xFFFF) {
               char temp[33] = {0};
               print_string("UNKNOWN DEV - ");

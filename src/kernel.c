@@ -8,6 +8,7 @@
 #include "pci.h"
 #include "net/ip.h"
 #include "net/udp.h"
+#include "fs/fdd.h"
 
 int main(void) {
   
@@ -20,7 +21,7 @@ int main(void) {
   screen_clear();
   
   ipv4_init();
-	udp_init();
+  udp_init();
   
   /* Create the table of exception and interrupt functions */
   print_string("Setting Up Interrupts...");
@@ -36,17 +37,20 @@ int main(void) {
   print_status(1);
   
   /* Enable interrupts */
-  asm volatile ("sti");	
-  
+  asm volatile ("sti");
+
   /* Scan the PCI bus for devices we recognize and init the driver for each device */
   print_string("Scanning PCI Bus for devices...\n");
   pci_init();
   print_string("Scanning complete.\n");
-  
+
+  /* Detect and initialize any floppy drives */
+  fdd_initialize();
+
   /* start the command line interface (CLI) */
   create_task(cli_main);	
   kb_init();
-  
+
   while (1) {
     __asm__("hlt");
   }
