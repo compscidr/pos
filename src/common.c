@@ -11,12 +11,32 @@ unsigned char inportb(unsigned short port)
 }
 
 /*
- * Reads two bytes from a port
+ * Reads a byte from a port and waits until it completes.
+ */
+unsigned char inportb_p(unsigned short port)
+{
+  unsigned char rv;
+  __asm__ __volatile__ ("inb %w1,%0\noutb %%al,$0x80":"=a" (rv):"Nd" (port));
+  return rv;
+}
+
+/*
+ * Reads a word (2 bytes) from a port
  */
 unsigned short inportw(unsigned short port)
 {
   unsigned short rv;
   __asm__ __volatile__ ("inw %%dx, %%ax" : "=a" (rv) : "d" (port));
+  return rv;
+}
+
+/*
+ * Reads a word (2 bytes) from a port and waits until it completes
+ */
+unsigned short inportw_p(unsigned short port)
+{
+  unsigned short rv;
+  __asm__ __volatile__ ("inw %w1,%0\noutb %%al,$0x80":"=a" (rv):"Nd" (port));
   return rv;
 }
 
@@ -31,11 +51,54 @@ unsigned long int inportl(unsigned short port)
 }
 
 /*
+ * Reads a long (4 bytes) from a port and waits until it completes
+ */
+unsigned long int inportl_p(unsigned short port)
+{
+  unsigned long int rv;
+  __asm__ __volatile__ ("inl %w1,%0\noutb %%al,$0x80":"=a" (rv):"Nd" (port));
+  return rv;
+}
+
+/*
+ * Reads count bytes into the address from given the port.
+ */
+void inportsb(unsigned short port, void * addr, unsigned long int count) {
+  __asm__ __volatile__ ("cld ; rep ; insb":"=D" (addr), "=c" (count)
+                       :"d" (port), "0" (addr), "1" (count));
+}
+
+/*
+ * Reads count words (x 2 bytes) into the address from the given port.
+ */
+void inportsw(unsigned short port, void * addr, unsigned long int count) {
+  __asm__ __volatile__ ("cld ; rep ; insw":"=D" (addr), "=c" (count)
+                       :"d" (port), "0" (addr), "1" (count));
+}
+
+/*
+ * Reads count longs (x 4 bytes) into the address from the given port.
+ */
+void inportsl(unsigned short port, void * addr, unsigned long int count) {
+  __asm__ __volatile__ ("cld ; rep ; insl":"=D" (addr), "=c" (count)
+                       :"d" (port), "0" (addr), "1" (count));
+}
+
+/*
  * Writes a bytes to a port
  */
 void outportb(unsigned short port, unsigned char data)
 {
   __asm__ __volatile__ ("outb %%al,%%dx" : : "a" (data), "d" (port));
+}
+
+/*
+ * Writes a bytes to a port and waits until it completes
+ */
+void outportb_p(unsigned short port, unsigned char data)
+{
+  __asm__ __volatile__ ("outb %b0,%w1\noutb %%al,$0x80": :"a" (data),
+                         "Nd" (port));
 }
 
 /*
@@ -47,11 +110,54 @@ void outportw(unsigned short port, unsigned short data)
 }
 
 /*
+ * Writes two bytes to a port and waits until it completes.
+ */
+void outportw_p(unsigned short port, unsigned short data)
+{
+  __asm__ __volatile__ ("outw %w0,%w1\noutb %%al,$0x80": :"a" (data),
+                         "Nd" (port));
+}
+
+/*
  * Writes a long (4 bytes) to a port
  */
 void outportl(unsigned short port, unsigned long data)
 {
   __asm__ __volatile__ ("outl %%eax,%%dx" : : "a"(data), "d"(port));
+}
+
+/*
+ * Writes a long (4 bytes) to a port and waits until it completes.
+ */
+void outportl_p(unsigned short port, unsigned long data)
+{
+  __asm__ __volatile__ ("outl %0,%w1\noutb %%al,$0x80": :"a" (data),
+                         "Nd" (port));
+}
+
+
+/*
+ * Writes count bytes from the address to the port.
+ */
+void outportsb(unsigned short port, const void * addr, unsigned long int count) {
+  __asm__ __volatile__ ("cld ; rep ; outsb":"=S" (addr), "=c" (count)
+                       :"d" (port), "0" (addr), "1" (count));
+}
+
+/*
+ * Writes count words (x 2 bytes) from the address into the port.
+ */
+void outportsw(unsigned short port, const void * addr, unsigned long int count) {
+  __asm__ __volatile__ ("cld ; rep ; outsw":"=S" (addr), "=c" (count)
+                       :"d" (port), "0" (addr), "1" (count));
+}
+
+/*
+ * Writes count longs (x 4 bytes) from the address into the port.
+ */
+void outportsl(unsigned short port, const void * addr, unsigned long int count) {
+  __asm__ __volatile__ ("cld ; rep ; outsl":"=S" (addr), "=c" (count)
+                       :"d" (port), "0" (addr), "1" (count));
 }
 
 /*
