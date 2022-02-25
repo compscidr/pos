@@ -235,6 +235,8 @@ void irq_handler(struct regs *r)
 	if(handler)
 		handler(r);
 
+        irq_received[r->int_no - 32] = 0;
+
 	/* If IDT > 40 (ie IRQ8-IRQ15), send EOI to slave */
 	if(r->int_no >= 40)
 	outportb(0xA0, 0x20);
@@ -310,4 +312,11 @@ void fault_handler(struct regs *r)
 		print_string("Serious Screw Up, stopping exec\n");
 		for(;;);
 	}
+}
+
+void irq_wait(int irq) {
+  // note: only a single thread can wait for a particular irq at a time for now
+  while (!irq_received[irq]) {
+    __asm__("hlt");
+  }
 }
