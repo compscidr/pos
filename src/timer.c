@@ -68,3 +68,11 @@ void timer_set_tick_frequency(unsigned int hz)
   
   timer_hz = hz;
 }
+
+void sleep(int time_ms) {
+  int start_ms = (seconds * 1000) + timer_ticks;
+  int current_ms = start_ms;
+  while (current_ms - start_ms < time_ms) {
+    current_ms = (seconds * 1000) + timer_ticks;
+  }
+}

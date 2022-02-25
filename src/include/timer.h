@@ -5,5 +5,6 @@
 
 void timer_init(void);
 unsigned int timer_handler(unsigned int old_esp);
+void sleep(int time_ms);
 
 #endif
