@@ -13,7 +13,7 @@
 ; The boot device # is expected in dl from stage1
 ;-----------------------------------------------------------------------
 [bits 16]
-[org 0x0700]
+[org 0x0500]
 
 stage2:
   mov si,stageTwoMsg
@@ -25,13 +25,12 @@ stage2:
 ;-----------------------------------------------------------------------
 load_kernel:
   mov byte [bootDev],dl       ; save the boot device from stage1
-
-  jmp searchFAT               ; assumess nextStageFile and nextStagePrt
+  jmp searchFAT               ; assumes nextStageFile and nextStagePtr
 
 end:
   call killMotor
   pop ax                      ; cleanup stack
-  
+
 ;-----------------------------------------------------------------------
 ; Information collection occurs here
 ; - cursor position
@@ -46,7 +45,8 @@ end:
 ; - load the interrupt descriptor table (IDT)
 ; - perform the switch, long jump to pmode to set the code segment
 ;-----------------------------------------------------------------------
-
+  mov si,pModeMsg
+  call printString
   cli
   call emptyKbuffer            ; enable A20
   mov al,0xd1
@@ -80,20 +80,17 @@ emptyKbuffer:
 ret
 
 nextStageFile   db "KERNEL  BIN"
-stageTwoMsg		  db "Stage2 loaded.",13,10,"Loading kernel...",0
-diskErrorMsg    db "Disk error loading the kernel, can't continue.'"
-                db 13,10,0
-fileErrorMsg    db "KERNEL.BIN missing.",13,10,0
-rebootMsg       db "Press a key to reboot and try again.",0
+stageTwoMsg		db "Loading KERNEL.BIN...",0
+pModeMsg        db "Loaded. Switching to 32-bits",0
 bootDev         db 0x00         ; device # of boot device
-buffer          dw 0xE000       ; location of the buffer
 nextStagePtr    dw 0x1400       ; must match pointer
-pointer			    dw 0x1400       ; address where kernel will reside
+pointer			dw 0x1400       ; address where kernel will reside
 cluster         dw 0x0000       ; cluster of the file to load
 SectorsPerTrack dw 18
 ReservedSectors dw 1
 Sides           dw 2
 RootDirEntries  dw 224
+buffer          dw 0xC800
 
 ;-----------------------------------------------------------------------
 ; Switch to 32-bit code / data, everything below this point is 32-bits

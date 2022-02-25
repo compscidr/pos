@@ -37,10 +37,10 @@ searchRoot:
   mov ax,0                  ; search all 224 entries, 
                             ; starting at offset 0
 
-; assumes si has the stage2 filename
+; assumes si has the next stage filename
 nextEntry:
   xchg cx,dx                ; use cx in inner loop
-  mov si,nextStageFile	    ; search for stage two filename
+  mov si,nextStageFile	    ; search for next stage filename
   mov cx,11
   rep cmpsb
   je fileFound
@@ -80,7 +80,7 @@ preLoad:
   mov bx,[nextStagePtr]     ; mem loc to load the next stage to
   mov ah,2
   mov al,1
-  push ax                   ; save in int13 loses it
+  push ax                   ; save in case int13 loses it
 
 loadFileSector:
   mov ax, word [cluster]    ; convert sector to logical
@@ -181,3 +181,7 @@ logicalToPhysical:
   pop bx
   mov dl, byte [bootDev]      ; set the device to read from
 ret
+
+fileErrorMsg    db "Missing.",0
+rebootMsg       db "Reboot?",0
+diskErrorMsg    db "Disk ERR.",0

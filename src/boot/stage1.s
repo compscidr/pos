@@ -63,13 +63,12 @@ main:                   ; put everything into a known state
   sti                   ; re-enable the interrupts
 
   mov byte [bootDev],dl ; save boot device number
-  mov eax,0						  ; required for old BIOS apparently
+  mov eax,0		        ; required for old BIOS apparently
 
   mov si,bootMsg
   call printString
   
-  call searchFAT        ; assumess nextStageFile and nextStagePrt
-  
+  call searchFAT        ; assumes nextStageFile and nextStagePrt
 end:
   call killMotor
   pop ax                ; clean up stack
@@ -85,16 +84,13 @@ end:
 ; Data
 ;-----------------------------------------------------------------------
 nextStageFile   db "STAGE2  BIN"
-bootMsg         db "Loading S2...",0
-diskErrorMsg    db "Disk ERR.",0
-fileErrorMsg    db "STAGE2.BIN missing.",0
-rebootMsg       db "Reboot?",0
+bootMsg         db "Loading STAGE2.BIN...",0
 
 bootDev         db 0x00     ; device # of boot device
 cluster         dw 0x0000   ; cluster of the file to load
-pointer         dw 0x0700   ; pointer for placing stage2 in mem
-nextStagePtr    dw 0x0700   ; must match pointer
-buffer          dw 0x7e00   ; location of buffer for FAT ops
+pointer         dw 0x0500   ; pointer for placing stage2 in mem
+nextStagePtr    dw 0x0500   ; must match pointer
+buffer          dw 0x7E00   ; location of buffer for FAT ops
 
 times 510 - ($-$$) db 0     ; zero pad the rest of the sector
 dw 0xaa55                   ; sign. indicates bootable sector
