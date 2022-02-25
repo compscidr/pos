@@ -3,6 +3,7 @@ vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
 floppya: 1_44=build/floppy.img, status=inserted
 boot: floppy
 megs: 128
-display_library: sdl
+display_library: sdl2
 #log: logs/bochslog.txt
 #ne2k: ioaddr=8000,irq=10,mac=fe:fd:00:00:00:01
+magic_break: enabled=1

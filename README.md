@@ -20,7 +20,7 @@ The build toolchain has been tested with Ubuntu 18.04 and requires
 
 The OS can be tested using either qemu or bochs which require the
 following packages:
-* bochs bochs-sdl
+* bochs bochs-sdl2
 * qemu qemu-system-i386
 
 ## Building 
