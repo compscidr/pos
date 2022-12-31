@@ -20,6 +20,8 @@ struct ipv4_packet_header
   unsigned char destination_address[4];
 };
 
+unsigned char ipv4_address[4];
+
 void ipv4_init(void)
 {
   memset(ipv4_address, 0, 4);

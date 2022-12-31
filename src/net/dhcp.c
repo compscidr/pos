@@ -6,6 +6,8 @@
 #include "dev/rtl8139.h"
 #include "mm.h"
 
+extern unsigned char * ipv4_address;
+
 //doc: http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol
 //doc: http://www.pcvr.nl/tcpip/bootp.htm
 
