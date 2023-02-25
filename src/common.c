@@ -253,6 +253,16 @@ char* itoa(int value, char *result, int base)
   return result;
 }
 
+/**
+ * Given an ascii value, return the binary value in the correct base
+ * @param value the ascii value
+ * @param base the base
+ * @return the binary value in that base
+ */
+char atoi(char value, int base) {
+  return value - 'A'; // todo make work for bases other than 10
+}
+
 /*
  * Returns the number of bytes in the target null-terminated string
  * (not including the null character

@@ -10,8 +10,22 @@
  */
 unsigned char * string_to_ip(char * string_ip) {
   unsigned char * ip = (unsigned char * ) malloc(4 * sizeof(char));
+  int place = 100;
+  int octet = 0;
   while ( * string_ip) {
-    //todo - need an itoa function for each octet
+    if (*string_ip == '.') {
+      *ip = octet;
+      octet = 0;
+      place = 100;
+    } else {
+      octet += (atoi(*string_ip, 10) * place);
+      if (place == 100) {
+        place = 10;
+      } else {
+        place = 1;
+      }
+    }
+    string_ip++;
   }
   return ip;
 }
