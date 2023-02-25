@@ -125,3 +125,26 @@ void ipv4_broadcast(char * data, unsigned short length, unsigned char protocol)
     
   eth_broadcast(buffer, length + sizeof(struct ipv4_packet_header), 0x0800);
 }
+
+/**
+ * Send a unicast ipv6 packet, ie)
+ * @param data the data to send
+ * @param length the length of the data to send
+ * @param protocol the next protocol header type
+ * @param source_address the source address as bytes (todo: ensure we actually have this address)
+ * @param destination_address the destination address as bytes
+ */
+void ipv4_unicast(char * data, unsigned short length, unsigned char protocol, unsigned char source_address[4], unsigned char destination_address[4]) {
+    struct ipv4_packet_header packet;
+    packet.version_ihl = 0x45;						//version = ipv4
+    packet.tos = 0x10;
+    packet.length = htons(sizeof(struct ipv4_packet_header) + length);
+    packet.id = htons(0x00);						//may need to fix this to give proper id
+    packet.foffset = htons(0x00);					//do not support offsets at this point
+    packet.ttl = 128;								//set this with a define somewhere maybe?
+    packet.protocol = protocol;
+    packet.checksum = 0x0000;						//set to zero before compute
+    memcpy(packet.source_address, source_address, 4);
+    memcpy(packet.destination_address, destination_address, 4);
+    packet.checksum = ipv4_checksum((unsigned short *)&packet);
+}
