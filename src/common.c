@@ -253,6 +253,41 @@ char* itoa(int value, char *result, int base)
   return result;
 }
 
+// https://github.com/bminor/newlib/blob/master/newlib/libc/stdlib/utoa.c
+char * utoa (unsigned value,char *str, int base) {
+    const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    int i, j;
+    unsigned remainder;
+    char c;
+
+    /* Check base is supported. */
+    if ((base < 2) || (base > 36))
+    {
+        str[0] = '\0';
+        return NULL;
+    }
+
+    /* Convert to string. Digits are in reverse order.  */
+    i = 0;
+    do
+    {
+        remainder = value % base;
+        str[i++] = digits[remainder];
+        value = value / base;
+    } while (value != 0);
+    str[i] = '\0';
+
+    /* Reverse string.  */
+    for (j = 0, i--; j < i; j++, i--)
+    {
+        c = str[j];
+        str[j] = str[i];
+        str[i] = c;
+    }
+
+    return str;
+}
+
 /*
  * Returns the number of bytes in the target null-terminated string
  * (not including the null character
@@ -279,6 +314,19 @@ char * strcpy(char * dest, char * src)
     pos++;
   }
   return dest;
+}
+
+char * strcat(char * dst, const char * src) {
+    char * temp = dst;
+    while (*temp != '\0') {
+        temp++;
+    }
+    while (*src != '\0') {
+        *temp = *src;
+        temp++;
+        src++;
+    }
+    return dst;
 }
 
 /*

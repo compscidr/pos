@@ -33,8 +33,10 @@ int strpos(const char *str, const char c);
 void swap(char * c1, char * c2);
 void reverse(char * string, unsigned int length);
 char* itoa(int value, char *result, int base);
+char* utoa(unsigned value, char *result, int base);
 size_t strlen(const char * s);
 char * strcpy(char * dest, char * src);
+char * strcat(char * dst, const char * src);
 int strcmp(const char *str1, const char *str2);
 
 /* Represent all of the registers */
