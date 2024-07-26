@@ -29,7 +29,7 @@ int main(void) {
   print_status(1);
   
   /* Sets up the thread structures so we can do context switches */
-  print_string("Intializing Threads & System Timer...");
+  print_string("Initializing Threads & System Timer...");
   thread_init();			
   
   /* Starts the system clock */
