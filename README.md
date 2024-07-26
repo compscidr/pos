@@ -44,7 +44,7 @@ Stage 1:
 |-------------------------------|---------------------------------------|---------------------|
 | 0x0000 - 0x04FF               | BIOS Functions                        | 1280 bytes          |
 | 0x0500 - 0x7BFF               | Stage2 Bootloader to be loaded here   | <= 30464 bytes      |
- | 0x7C00 - 0x7DFF               | Stage1 Bootloader loaded here by bios | 512 bytes           |
+| 0x7C00 - 0x7DFF               | Stage1 Bootloader loaded here by bios | 512 bytes           |
 | 0x7E00 - 0x7E00               | FD Buffer (during stage1)             | 16896 bytes - stack |
 | 0x7E00 + stage2 size - 0xFFFF | Stage 1 & Stage 2 Stack               | x bytes             |
 
