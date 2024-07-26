@@ -1,6 +1,7 @@
 #include "common.h"
 #include "fs/ide.h"
 #include "screen.h"
+#include "timer.h"
 
 // Channels:
 #define      ATA_PRIMARY      0x00
