@@ -28,7 +28,7 @@ following packages:
 
 ## Testing in QEMU
 Since POS currently only supports rtl8139, it is recommended to use qemu with the network device specified as follows. It is also possible to log the packets to a network dump for debugging after the run.
-```qemu-system-i386 -fda build/floppy.img -net nic,model=rtl8139 -net user,id=u1 -object filter-dump,id=f1,netdev=u1,file=networkdump.dat```
+```qemu-system-i386 -drive file=build/floppy.img,format=raw,if=floppy -net nic,model=rtl8139 -net user,id=u1 -object filter-dump,id=f1,netdev=u1,file=networkdump.dat```
 
 ## Testing in Bochs
 Currently, bochs only supports the ne2000 network card - this is still a TODO item, so it is not able to use the networking features - but can be used to test non-network stuff.
