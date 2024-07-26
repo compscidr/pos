@@ -96,8 +96,8 @@ struct IDEChannelRegisters {
 } channels[2];
 
 unsigned char ide_buf[2048] = {0};
-volatile unsigned static char ide_irq_invoked = 0;
-unsigned static char atapi_packet[12] = {0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static volatile unsigned char ide_irq_invoked = 0;
+static unsigned char atapi_packet[12] = {0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 struct ide_device {
   unsigned char  Reserved;    // 0 (Empty) or 1 (This Drive really exists).
@@ -153,13 +153,13 @@ void ide_read_buffer(unsigned char channel, unsigned char reg, unsigned int buff
     ide_write(channel, ATA_REG_CONTROL, 0x80 | channels[channel].nIEN);
   asm("pushw %es; movw %ds, %ax; movw %ax, %es");
   if (reg < 0x08)
-    inportsl(channels[channel].base  + reg - 0x00, buffer, quads);
+    inportsl(channels[channel].base  + reg - 0x00, (void*)buffer, quads);
   else if (reg < 0x0C)
-    inportsl(channels[channel].base  + reg - 0x06, buffer, quads);
+    inportsl(channels[channel].base  + reg - 0x06, (void*)buffer, quads);
   else if (reg < 0x0E)
-    inportsl(channels[channel].ctrl  + reg - 0x0A, buffer, quads);
+    inportsl(channels[channel].ctrl  + reg - 0x0A, (void*)buffer, quads);
   else if (reg < 0x16)
-    inportsl(channels[channel].bmide + reg - 0x0E, buffer, quads);
+    inportsl(channels[channel].bmide + reg - 0x0E, (void*)buffer, quads);
   asm("popw %es;");
   if (reg > 0x07 && reg < 0x0C)
     ide_write(channel, ATA_REG_CONTROL, channels[channel].nIEN);
@@ -259,13 +259,13 @@ void ide_initialize(unsigned int BAR0, unsigned int BAR1, unsigned int BAR2, uns
   for (int i = 0; i < 4; i++)
     if (ide_devices[i].Reserved == 1) {
       print_string("    FOUND DRIVE TYPE: ");
-      print_string((const char *[]){"ATA", "ATAPI"}[ide_devices[i].Type]);
+      print_string((char *[]){"ATA", "ATAPI"}[ide_devices[i].Type]);
       print_string(" Size: ");
       char size_string[35] = {0};
-      itoa(ide_devices[i].Size , size_string, 10);
+      itoa((int)ide_devices[i].Size , size_string, 10);
       print_string(size_string);
       print_string(" bytes. Model: ");
-      print_string(ide_devices[i].Model);
+      print_string((char*)ide_devices[i].Model);
       print_string("\n");
     }
 }

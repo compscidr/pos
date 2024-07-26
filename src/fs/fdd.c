@@ -481,8 +481,8 @@ void fdd_initialize() {
   outportb_p(0x70, 0x10);
   unsigned int drives = inportb_p(0x71);
   print_string("  Floppy drive 0: ");
-  print_string(drive_types[drives >> 4]);
+  print_string((char*)drive_types[drives >> 4]);
   print_string("\n  Floppy drive 1: ");
-  print_string(drive_types[drives & 0xf]);
+  print_string((char*)drive_types[drives & 0xf]);
   print_string("\n");
 }
