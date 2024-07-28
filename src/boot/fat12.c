@@ -97,7 +97,7 @@ static void floppy_dma_init(floppy_dir dir) {
         unsigned long l;    // 1 long = 32-bit
     } a, c; // address and count
 
-    a.l = (unsigned) &floppy_dmabuf;
+    a.l = (unsigned long) &floppy_dmabuf;
     c.l = (unsigned) floppy_dmalen - 1; // -1 because of DMA counting
 
     // check that address is at most 24-bits (under 16MB)
@@ -238,7 +238,7 @@ int floppy_calibrate(int base) {
             static const char * status[] =
                     { 0, "error", "invalid", "drive" };
             print_string("floppy_calibrate: status = ");
-            print_string(status[st0 >> 6]);
+            print_string((char*)status[st0 >> 6]);
             print_string("\n");
             continue;
         }
@@ -301,13 +301,13 @@ int floppy_seek(int base, unsigned cyli, int head) {
         floppy_write_cmd(base, cyli);
 
         irq_wait(floppy_irq);
-        floppy_check_interrupt(base, &st0, &cyl);
+        floppy_check_interrupt(base, (void*)&st0, (void*)&cyl);
 
         if(st0 & 0xC0) {
             static const char * status[] =
                     { "normal", "error", "invalid", "drive" };
             print_string("floppy_seek: status = ");
-            print_string(status[st0 >> 6]);
+            print_string((char*)status[st0 >> 6]);
             print_string("\n");
             continue;
         }
