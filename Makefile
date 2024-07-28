@@ -85,9 +85,9 @@ kernel.bin: ${OBJ} src/asm/interrupt.s
 oscopy: $(BUILDDIR)/STAGE2.BIN
 	@echo -n "Copying OS files to disk image..."
 	@sudo mount $(BUILDDIR)/floppy.img $(BUILDDIR)/floppy -o loop
+	@sudo cp $(BUILDDIR)/KERNEL.BIN $(BUILDDIR)/floppy
 	@sudo cp $(BUILDDIR)/STAGE2.BIN $(BUILDDIR)/floppy
 	@sudo cp $(BUILDDIR)/FAT12.BIN $(BUILDDIR)/floppy
-	@sudo cp $(BUILDDIR)/KERNEL.BIN $(BUILDDIR)/floppy
 	@sleep 2
 	@sudo umount -d $(BUILDDIR)/floppy
 	@echo "done."
