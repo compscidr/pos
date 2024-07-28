@@ -369,14 +369,15 @@ int floppy_do_sector(int base, unsigned cyl, unsigned head, unsigned sect, flopp
 
         sleep(100); // give some time (100ms) to settle after the seeks
 
+        // see https://www.cs.umd.edu/~hollings/cs412/s03/prog1/floppy.c
         floppy_write_cmd(base, cmd);  // set above for current direction
         floppy_write_cmd(base, (head << 2) | drive);    // 0:0:0:0:0:HD:US1:US0 = head and drive
         floppy_write_cmd(base, cyl);  // cylinder
         floppy_write_cmd(base, head);    // first head (should match with above)
         floppy_write_cmd(base, sect);    // first sector, strangely counts from 1
         floppy_write_cmd(base, 2);    // bytes/sector, 128*2^x (x=2 -> 512)
-        floppy_write_cmd(base, 1);   // number of tracks to operate on
-        floppy_write_cmd(base, 0x1b); // GAP3 length, 27 is default for 3.5"
+        floppy_write_cmd(base, 18);   // 18 sectors per track
+        floppy_write_cmd(base, 0x1c); // gap
         floppy_write_cmd(base, 0xff); // data length (0xff if B/S != 0)
 
         irq_wait(floppy_irq); // don't SENSE_INTERRUPT here!
