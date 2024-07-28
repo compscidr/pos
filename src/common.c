@@ -351,6 +351,16 @@ int strcmp(const char *str1, const char *str2)
   return 0;
 }
 
+int strncmp(const char *str1, const char *str2, size_t n) {
+    int pos;
+    for (pos = 0; pos < n; pos++) {
+        if (str1[pos] != str2[pos]) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
 /*
  * Returns the pos of the first occurance of c, or -1 if end of string is
  * reached. Must be null-terminated
