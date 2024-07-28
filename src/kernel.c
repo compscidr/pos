@@ -1,17 +1,9 @@
-#include "gdt.h"
-#include "idt.h"
-#include "task.h"
-#include "timer.h"
 #include "screen.h"
 #include "cli.h"
-#include "kb.h"
-#include "pci.h"
-#include "net/ip.h"
-#include "net/udp.h"
-#include "fs/fdd.h"
 
 int main(void) {
-
+    screen_init();
+    screen_clear();
     print_string("I'm in the kernel now!!");
 
 //  /* Global Descriptor Table - Sets up Rings, Flat memory segments
