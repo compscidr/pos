@@ -361,7 +361,7 @@ int floppy_do_sector(int base, unsigned cyl, unsigned head, unsigned sect, flopp
     }
 
     int i;
-    for(i = 0; i < 20; i++) {
+    for(i = 0; i < 1; i++) {
         floppy_motor(base, floppy_motor_on);
 
         // init dma..
