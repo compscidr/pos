@@ -231,11 +231,18 @@ void irq_handler(struct regs *r)
 	handler = irq_routines[r->int_no - 32];
 	irq_received[r->int_no - 32] = 1;
 
+    char temp[33] = {0};
+    itoa(r->int_no - 32, temp, 10);
+//    print_string("IRQ ");
+//    print_string(temp);
+//    print_string(" received\n");
+
 	/* Execute the interrupt handler routine */
 	if(handler)
 		handler(r);
 
-        irq_received[r->int_no - 32] = 0;
+    // let the wait for IRQ function clear this after it's done
+    // irq_received[r->int_no - 32] = 0;
 
 	/* If IDT > 40 (ie IRQ8-IRQ15), send EOI to slave */
 	if(r->int_no >= 40)
@@ -315,8 +322,14 @@ void fault_handler(struct regs *r)
 }
 
 void irq_wait(int irq) {
+//  print_string("Waiting for IRQ ");
+//  char temp[33] = {0};
+//  itoa(irq, temp, 10);
+//  print_string(temp);
+//  print_string("\n");
   // note: only a single thread can wait for a particular irq at a time for now
   while (!irq_received[irq]) {
     __asm__("hlt");
   }
+  irq_received[irq] = 0;
 }
