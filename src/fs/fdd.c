@@ -265,11 +265,10 @@ typedef enum {
 // and must not cross 64k borders so easiest thing is to align it
 // to 2^N boundary at least as big as the block
 
-/*
+
 #define floppy_dmalen 0x4800
-static const char floppy_dmabuf[floppy_dmalen]
-    __attribute__((aligned(0x8000)));
-*/
+//static const char floppy_dmabuf[floppy_dmalen] // if we do this, we fail to boot - need to investigate
+//    __attribute__((aligned(0x8000)));
 #define floppy_dmalen 0x4800
 static const char * floppy_dmabuf
     __attribute__((aligned(0x8000)));
