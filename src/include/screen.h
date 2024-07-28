@@ -6,6 +6,7 @@ void screen_clear(void);
 void print_address(unsigned long addr);
 void print_char(unsigned char c);
 void print_string(char * string);
+void print_n_string(char * string, int n);
 void print_string_at(char * text, int x, int y);
 void print_string_atx(char * text, int x);
 void print_status(unsigned char status);

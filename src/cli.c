@@ -4,6 +4,7 @@
 #include "mm.h"
 #include "net.h"
 #include "net/dhcp.h"
+#include "pci.h"
 #include "fs/fat.h"
 #include "net/icmp.h"
 
@@ -11,7 +12,7 @@ void cli_main(void)
 {
   print_string("--------------------------------------------------------------------------------");
   print_string("Welcome to POS console\n");
-  print_string("commands: help clear dhcp freemem ip ls ping shutdown reboot\n");
+  print_string("commands: help clear dhcp freemem ip ls lspci ping shutdown reboot\n");
 	
   char buffer[1024];
 
@@ -25,7 +26,7 @@ void cli_main(void)
     //eventually this should check some path in the filesystem
     //for the programs we know about (or the current console path)
     if(strcmp(buffer,"help")==0) {
-      print_string("commands: help clear dhcp freemem ip ls ping shutdown reboot\n");
+      print_string("commands: help clear dhcp freemem ip ls lspci ping shutdown reboot\n");
     } else if(strcmp(buffer,"reboot")==0) {
       reboot();
     } else if(strcmp(buffer,"clear")==0) {
@@ -39,9 +40,11 @@ void cli_main(void)
     } else if(strcmp(buffer,"ls")==0) {
       ls("/");
     } else if (strcmp(buffer,"shutdown")==0) {
-        running = false;
+      running = false;
+    } else if (strcmp(buffer, "lspci")==0) {
+      lspci();
     } else if (strcmp(buffer, "ping")==0) {
-        icmp_ping(string_to_ip("10.0.2.1"));
+      icmp_ping(string_to_ip("10.0.2.1"));
     } else {
       print_string("Unknown command. Please try again. \n");
     }

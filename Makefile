@@ -14,6 +14,7 @@ LD = ld
 CFLAGS = -I $(IDIR) -m32 -c -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
 
 # finds all of the source files so that we don't need to manually specify when new sources are added
+# skip boot because that's where we're putting the fat12 protected mode loader for stage2
 SRC = $(shell find . -name *.c)
 CLEANOBJ = $(shell find . -name *.o)
 OBJ = $(SRC:%.c=%.o)
@@ -21,14 +22,15 @@ OBJ = $(SRC:%.c=%.o)
 # filter out kernel.o so that we can manually put it at front of list for linking
 # (otherwise main is not put at correct memory address)
 KERNELOBJ = ./src/kernel.o
-FILTEROBJ = $(filter-out $(KERNELOBJ), $(OBJ))
+FAT12OBJ = ./src/boot/fat12.o
+FILTEROBJ = $(filter-out $(KERNELOBJ) $(FAT12OBJ), $(OBJ))
 
 # directory name where we will mount a "virtual" floppy for creating OS 
 # image
 BUILDDIR = build
 FLOPPYDIR = floppy
 
-all: prep stage1 stage2 kernel oscopy
+all: prep stage1 stage2 fat12.bin kernel.bin oscopy
 
 # prepares the directory where we will mount and create our OS image 
 # filesystem
@@ -57,8 +59,10 @@ stage2: src/boot/stage2.s
 %.o: %.c
 	@$(CC) -c $< -o $@ $(CFLAGS)
 
-# compile the kernel! :D
-kernel: kernel.bin
+fat12.bin: ${OBJ} src/asm/interrupt.s
+	@nasm src/asm/interrupt.s -o $(BUILDDIR)/interrupt.o -f elf32
+	@ld -m elf_i386 -Ttext 0x1400 -e main src/boot/fat12.o src/screen.o src/common.o src/gdt.o src/idt.o src/timer.o src/mm.o src/task.o $(BUILDDIR)/interrupt.o -z noexecstack -o $(BUILDDIR)/FAT12.BIN
+	@objcopy -R .note -R .comment -S -O binary $(BUILDDIR)/FAT12.BIN
 
 # kernel(main) is loaded at 0x1400 - note the order of linking here: kernel.o must be first!
 # also we need to remove the note and comment section from the elf and switch to a flat binary (not quite sure why atm - investigate in future?)
@@ -66,12 +70,13 @@ kernel: kernel.bin
 # be done easily in c, so we link them into the kernel here manually
 kernel.bin: ${OBJ} src/asm/interrupt.s
 	@echo -n "Compiling kernel..."
-	@nasm src/asm/interrupt.s -o $(BUILDDIR)/interrupt.o -f elf32
-	@ld -m elf_i386 -o $(BUILDDIR)/KERNEL.BIN -Ttext 0x1400 -e main src/kernel.o $(BUILDDIR)/interrupt.o $(FILTEROBJ)
+	#@nasm src/asm/interrupt.s -o $(BUILDDIR)/interrupt.o -f elf32
+	#@ld -m elf_i386 -o $(BUILDDIR)/KERNEL.BIN -Ttext 0x00100000 -e main src/kernel.o $(BUILDDIR)/interrupt.o -z noexecstack $(FILTEROBJ)
+	@ld -m elf_i386 -o $(BUILDDIR)/KERNEL.BIN -Ttext 0x00100000 -e main src/kernel.o src/screen.o src/common.o
 	@objcopy -R .note -R .comment -S -O binary $(BUILDDIR)/KERNEL.BIN
-	@rm $(OBJ)
-	@rm -rf $(BUILDDIR)/interrupt.o
-	@rm -rf src/asm/interrupt.o
+	#@rm $(OBJ)
+	#@rm -rf $(BUILDDIR)/interrupt.o
+	#@rm -rf src/asm/interrupt.o
 	@echo "done"
 
 # Here we mount the floppy.img file which only has stage1 atm. We can then let Ubuntu treat
@@ -81,6 +86,7 @@ oscopy: $(BUILDDIR)/STAGE2.BIN
 	@echo -n "Copying OS files to disk image..."
 	@sudo mount $(BUILDDIR)/floppy.img $(BUILDDIR)/floppy -o loop
 	@sudo cp $(BUILDDIR)/STAGE2.BIN $(BUILDDIR)/floppy
+	@sudo cp $(BUILDDIR)/FAT12.BIN $(BUILDDIR)/floppy
 	@sudo cp $(BUILDDIR)/KERNEL.BIN $(BUILDDIR)/floppy
 	@sleep 2
 	@sudo umount -d $(BUILDDIR)/floppy

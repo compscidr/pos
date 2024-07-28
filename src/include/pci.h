@@ -5,6 +5,8 @@ void pci_init(void);
 unsigned long int pci_config_read(unsigned short int bus, unsigned short int device, unsigned short int func, unsigned int content);
 void pci_config_write_word(unsigned short int bus, unsigned short int device, unsigned short int func, unsigned short reg, unsigned int val);
 
+void lspci(void);
+
 //determines how many pci devices to check for
 #define PCI_MAX_BUS           255
 #define PCI_MAX_DEVICES       32

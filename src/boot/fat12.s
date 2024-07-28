@@ -10,6 +10,10 @@
 ; assumes that nextStagePtr has the address to load the next stage into
 ; and assumes that nextStageFile points to the FAT 12 filename of the
 ; next stage (whether that's STAGE2  BIN or KERNEL  BIN)
+;
+; Note: this will only work in real mode because it uses the INT13 bios
+; handler. We will need to implement a fat12 / floppy driver in protected
+; mode, in order to load the kernel to an area beyond 0xFFFF.
 ;-----------------------------------------------------------------------
 searchFAT:
 

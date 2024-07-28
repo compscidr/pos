@@ -79,12 +79,12 @@ emptyKbuffer:
 	pop ax
 ret
 
-nextStageFile   db "KERNEL  BIN"
-stageTwoMsg		db "Loading KERNEL.BIN...",0
+nextStageFile   db "FAT12   BIN" ; note this must have space padding up to the ending
+stageTwoMsg		db "Loading FAT12.BIN...",0
 pModeMsg        db "Loaded. Switching to 32-bits",0
 bootDev         db 0x00         ; device # of boot device
 nextStagePtr    dw 0x1400       ; must match pointer
-pointer			dw 0x1400       ; address where kernel will reside
+pointer			dw 0x1400       ; address where kernel will reside (required for fat12.s)
 cluster         dw 0x0000       ; cluster of the file to load
 SectorsPerTrack dw 18
 ReservedSectors dw 1

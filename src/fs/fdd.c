@@ -265,11 +265,10 @@ typedef enum {
 // and must not cross 64k borders so easiest thing is to align it
 // to 2^N boundary at least as big as the block
 
-/*
+
 #define floppy_dmalen 0x4800
-static const char floppy_dmabuf[floppy_dmalen]
-    __attribute__((aligned(0x8000)));
-*/
+//static const char floppy_dmabuf[floppy_dmalen] // if we do this, we fail to boot - need to investigate
+//    __attribute__((aligned(0x8000)));
 #define floppy_dmalen 0x4800
 static const char * floppy_dmabuf
     __attribute__((aligned(0x8000)));
@@ -481,8 +480,8 @@ void fdd_initialize() {
   outportb_p(0x70, 0x10);
   unsigned int drives = inportb_p(0x71);
   print_string("  Floppy drive 0: ");
-  print_string(drive_types[drives >> 4]);
+  print_string((char*)drive_types[drives >> 4]);
   print_string("\n  Floppy drive 1: ");
-  print_string(drive_types[drives & 0xf]);
+  print_string((char*)drive_types[drives & 0xf]);
   print_string("\n");
 }

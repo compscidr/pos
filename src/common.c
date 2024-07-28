@@ -253,6 +253,41 @@ char* itoa(int value, char *result, int base)
   return result;
 }
 
+// https://github.com/bminor/newlib/blob/master/newlib/libc/stdlib/utoa.c
+char * utoa (unsigned value,char *str, int base) {
+    const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    int i, j;
+    unsigned remainder;
+    char c;
+
+    /* Check base is supported. */
+    if ((base < 2) || (base > 36))
+    {
+        str[0] = '\0';
+        return NULL;
+    }
+
+    /* Convert to string. Digits are in reverse order.  */
+    i = 0;
+    do
+    {
+        remainder = value % base;
+        str[i++] = digits[remainder];
+        value = value / base;
+    } while (value != 0);
+    str[i] = '\0';
+
+    /* Reverse string.  */
+    for (j = 0, i--; j < i; j++, i--)
+    {
+        c = str[j];
+        str[j] = str[i];
+        str[i] = c;
+    }
+
+    return str;
+}
+
 /**
  * Given an ascii value, return the binary value in the correct base
  * @param value the ascii value
@@ -291,6 +326,19 @@ char * strcpy(char * dest, char * src)
   return dest;
 }
 
+char * strcat(char * dst, const char * src) {
+    char * temp = dst;
+    while (*temp != '\0') {
+        temp++;
+    }
+    while (*src != '\0') {
+        *temp = *src;
+        temp++;
+        src++;
+    }
+    return dst;
+}
+
 /*
  * Returns 0 if str1 matches exactly str2, else returns -1
  * (including size / length)
@@ -311,6 +359,16 @@ int strcmp(const char *str1, const char *str2)
   }
 
   return 0;
+}
+
+int strncmp(const char *str1, const char *str2, size_t n) {
+    int pos;
+    for (pos = 0; pos < n; pos++) {
+        if (str1[pos] != str2[pos]) {
+            return -1;
+        }
+    }
+    return 0;
 }
 
 /*
