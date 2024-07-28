@@ -52,21 +52,22 @@ In practice, stage2 is only a little bit more than 1 sector, ie) 512 bytes.
 
 Stage 2 and Beyond:
 
-| Address                              | Function                            | Size                        |
-|--------------------------------------|-------------------------------------|-----------------------------|
-| 0x00000000 - 0x000004FF              | Bios Functions                      | 1280 bytes                  |
-| 0x00000500 - 0x00001400              | Stage2 Bootloader                   | 3840 bytes                  |
-| 0x00001400 - 0x00007FFF              | Kernel                              | 27647 bytes                 |
-| 0x00008000 - 0x0000C800              | FD Buffer (after stage2)            | 18432 Bytes                 |
-| 0x0000C800 - 0x0000FFFF - stack size | FD Buffer (during stage2)           | <= 14335 bytes              |
-| stack size - 0x0000FFFF              | Stage 2 RT mode stack               | x bytes                     |
-| 0x000A0000 - 0x000B0000              | EGA/VGA Memory Graphics Mode        | 65536 bytes                 |
-| 0x000B0000 - 0x000B8000              | Mono Text Mode                      | 32768 bytes                 |
-| 0x000B8000 - 0x000C0000              | Color Text Mode / CGA Graphics Mode | 32768 bytes                 |
-| 0x00100000 - 0x00EFFFFF              | Kernel (TODO)                       | 14680063 bytes ~= 14MB      |
-| 0x01000000 - 0x03FFFFFF              | Malloc memory area                  | 50331647 bytes ~= 50MB      |
-| 0x04000000 - 0x07FFFFFF              | Stage2 PMode / OS Stack             | 67108863 bytes ~= 67MB      |
-| 0x08000000 - 0xFFFFFFFF              | Unused                              | 4160749567 bytes ~= 4160 MB |
+| Address                              | Function                            | Size                              |
+|--------------------------------------|-------------------------------------|-----------------------------------|
+| 0x00000000 - 0x00000500              | Bios Functions                      | 1280 bytes                        |
+| 0x00000500 - 0x00001400              | Stage2 ACM Bootloader               | 3840 bytes                        |
+| 0x00001400 - 0x0000C800              | Stage2.5 C Bootloader               | 46080 bytes (currently 44540)     |
+| 0x0000C800 - 0x0000FFFF - stack size | FD Buffer (during stage2)           | <= 14335 bytes                    |
+| stack size - 0x0000FFFF              | Stage 2 RT mode stack               | x bytes (grows from 0x0ffff down) |
+| 0x0000FFFF - 0x000A0000              | Unused                              | 589825 bytes ~= 0.58MB            |
+| 0x000A0000 - 0x000B0000              | EGA/VGA Memory Graphics Mode        | 65536 bytes                       |
+| 0x000B0000 - 0x000B8000              | Mono Text Mode                      | 32768 bytes                       |
+| 0x000B8000 - 0x000C0000              | Color Text Mode / CGA Graphics Mode | 32768 bytes                       |
+| 0x00C00000 - 0x00100000              | Unused                              | 11534336 bytes ~= 11.5MB          |
+| 0x00100000 - 0x01000000              | Kernel (TODO)                       | 14680064 bytes ~= 14MB            |
+| 0x01000000 - 0x04000000              | Malloc memory area                  | 50331648 bytes ~= 50MB            |
+| 0x04000000 - 0x08000000              | Stage2 PMode / OS Stack             | 67108864 bytes ~= 67MB            |
+| 0x08000000 - 0xFFFFFFFF              | Unused                              | 4160749568 bytes ~= 4160 MB       |
 
 Total Required = 128MB
 
