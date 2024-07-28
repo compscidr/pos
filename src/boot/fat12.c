@@ -49,6 +49,7 @@ enum floppy_commands {
 //  to be: https://stackoverflow.com/questions/4067811/how-to-place-a-variable-at-a-given-absolute-address-in-memory-with-gcc
 #define floppy_dmalen 0x200
 static const char floppy_dmabuf[floppy_dmalen];
+char fat12_table[floppy_dmalen]; // if this is static const we get all zeros
 
 // can't actually implement the init function here because main needs to be the first function
 void fdd_initialize();
