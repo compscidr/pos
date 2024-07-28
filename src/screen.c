@@ -224,6 +224,21 @@ void print_status(unsigned char status)
 }
 
 /*
+ * Prints up to n characters of a string, or up to the /0 character.
+ * Good for strings which are not null-terminated such as in packed structs.
+ */
+void print_n_string(char * string, int n) {
+    int i;
+    for (i = 0; i < n; i++) {
+        if (string[i] == '\0') {
+            break;
+        } else {
+            print_char(string[i]);
+        }
+    }
+}
+
+/*
  * assumes there is extra space in the string
  */
 char * pad (char * input, int length)
