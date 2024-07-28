@@ -402,7 +402,7 @@ int floppy_do_sector(int base, unsigned cyl, unsigned head, unsigned sect, flopp
             static const char * status[] =
                     { 0, "error", "invalid command", "drive not ready" };
             print_string("floppy_do_sector: status =");
-            print_string(status[st0 >> 6]);
+            print_string((char*)status[st0 >> 6]);
             print_string("\n");
             error = 1;
         }
