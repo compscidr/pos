@@ -624,12 +624,24 @@ struct fat_directory_sector {
 int load_sector_and_copy_to_memory(int base, unsigned int lba, void *memory) {
     struct chs chs = convert_lba_to_chs(lba);
     int result = floppy_do_sector(base, chs.cylinder, chs.head, chs.sector, floppy_dir_read);
+    print_status(result == 0);
     if (result != 0) {
         return result;
     }
+    char temp[33] = {0};
+    itoa((unsigned long)memory, temp, 16);
+    print_string("Copying sector to memory: ");
+    print_string(temp);
+    print_string("\n");
     memcpy(memory, (void*)floppy_dmabuf, floppy_dmalen);
     return 0;
 }
+
+int fat_to_lba(int fat_sector) {
+    return 33 + fat_sector - 2;
+}
+
+
 
 void fdd_initialize() {
     print_string("Looking for floppy drives\n");
@@ -648,9 +660,28 @@ void fdd_initialize() {
 //    print_string("Reading the MBR from the floppy");
 //    int read_result = floppy_do_sector(floppy_base, 0, 0, 1, floppy_dir_read);
 //    print_status(read_result == 0);
-//
+
 //    struct boot_sector *boot_sector = (struct boot_sector*)floppy_dmabuf;
 //    debug_mbr(boot_sector);
+
+    print_string("Reading the FAT table from the floppy");
+    load_sector_and_copy_to_memory(floppy_base, 1, (void*)&fat12_table);
+
+    //unsigned long fat_table_memory = (unsigned long)&fat12_table;
+    //char temp[33] = {0};
+    //itoa((unsigned)fat_table_memory, temp, 16);
+    //print_string("FAT table memory: ");
+    //print_string(temp);
+    //print_string("\n");
+    //hd(fat_table_memory, fat_table_memory + 20);
+
+    //print_string("FAT table array access test: ");
+    //for (int i = 0; i < 10; i++) {
+    //    itoa(fat12_table[i], temp, 16);
+    //    print_string(temp);
+    //    print_string(" ");
+    //}
+    //print_string("\n");
 
     // read the root directory
     struct chs chs = convert_lba_to_chs(19);
@@ -671,6 +702,13 @@ void fdd_initialize() {
         print_n_string(root_dir->entries[i].filename, 8);
         print_string(".");
         print_n_string(root_dir->entries[i].extension, 3);
+        char temp[33] = {0};
+        itoa(root_dir->entries[i].file_size, temp, 10);
+        print_string(" SIZE: ");
+        print_string(temp);
+        itoa(root_dir->entries[i].first_cluster_low, temp, 10);
+        print_string(" CLUSTER: ");
+        print_string(temp);
         print_string("\n");
 
         if ((strncmp("KERNEL  ", root_dir->entries[i].filename, 8) == 0) && (strncmp("BIN", root_dir->entries[i].extension, 3) == 0)) {
@@ -690,18 +728,77 @@ void fdd_initialize() {
         print_string(temp);
         print_string("\n");
 
-        //int destination = 0x00100000;
-        //load_sector_and_copy_to_memory(floppy_base, root_dir->entries[kernel_index].first_cluster_low, (void*)destination);
+        unsigned long destination = 0x100000;
+        int fat_sector = root_dir->entries[kernel_index].first_cluster_low;
 
-        print_string("Reading the first cluster of the kernel file...");
-        struct chs first_chs = convert_lba_to_chs(root_dir->entries[kernel_index].first_cluster_low);
-        int first_cluster_result = floppy_do_sector(floppy_base, first_chs.cylinder, first_chs.head, first_chs.sector, floppy_dir_read);
-        print_status(first_cluster_result == 0);
+        while (fat_sector > 2 && fat_sector < 0xFF0) {
+            int lba = fat_to_lba(fat_sector);
+            print_string("Reading sector from kernel.bin FAT: ");
+            itoa(fat_sector, temp, 10);
+            print_string(temp);
+            print_string(" LBA: ");
+            itoa(lba, temp, 10);
+            print_string(temp);
+            print_string("...");
+            load_sector_and_copy_to_memory(floppy_base, lba, (void*)destination);
+            destination += 0x200;
+
+            //unsigned long fat_table_memory = (unsigned long)&fat12_table;
+            //char temp[33] = {0};
+            //itoa((unsigned)fat_table_memory, temp, 16);
+            //print_string("FAT table memory: ");
+            //print_string(temp);
+            //print_string("\n");
+            //hd(fat_table_memory, fat_table_memory + 20);
+
+            int next_fat_sector = 0;
+            if (fat_sector % 2 == 0) {
+                //print_string("  Even sector\n");
+                int low_8_bit_index = 3 * fat_sector / 2;
+                int high_4_bit_index = (3 * fat_sector / 2) + 1;
+                //itoa(low_8_bit_index, temp, 10);
+                //print_string("  Low 8 bit index: ");
+                //print_string(temp);
+                //itoa(high_4_bit_index, temp, 10);
+                //print_string("  High 4 bit index: ");
+                //print_string(temp);
+                next_fat_sector = (fat12_table[low_8_bit_index] & 0xFF) | ((fat12_table[high_4_bit_index] & 0x0F) << 8);
+            } else {
+                //print_string("  Odd sector\n");
+                int low_4_bit_index = 3 * fat_sector / 2;
+                int high_8_bit_index = (3 * fat_sector / 2) + 1;
+                //itoa(low_4_bit_index, temp, 10);
+                //print_string("  Low 4 bit index: ");
+                //print_string(temp);
+                //itoa(high_8_bit_index, temp, 10);
+                //print_string("  High 8 bit index: ");
+                //print_string(temp);
+
+                //char low_4_bit = fat12_table[low_4_bit_index] >> 4;
+                //char high_8_bit = fat12_table[high_8_bit_index];
+
+                //itoa(low_4_bit, temp, 10);
+                //print_string("  Low 4 bit: ");
+                //print_string(temp);
+                //itoa(high_8_bit, temp, 10);
+                //print_string("  High 8 bit: ");
+                //print_string(temp);
+
+                next_fat_sector = (fat12_table[low_4_bit_index] & 0xF0) >> 4 | ((fat12_table[high_8_bit_index] & 0xFF) << 4);
+            }
+            itoa(next_fat_sector, temp, 10);
+            print_string("  Next FAT sector: ");
+            print_string(temp);
+            print_string("\n");
+            fat_sector = next_fat_sector;
+        }
+        print_string("Done reading kernel.bin\n");
+
+        int (*func)(void) = (int (*)(void))0x100000;
+        func();
     } else {
         print_string("Kernel file not found\n");
     }
-
-
 
     // todo, parse the FAT, find the kernel.bin file, load it to 0x00100000, and jump to it
 }
