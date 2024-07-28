@@ -56,7 +56,7 @@ Stage 2 and Beyond:
 |--------------------------------------|-------------------------------------|-----------------------------------|
 | 0x00000000 - 0x00000500              | Bios Functions                      | 1280 bytes                        |
 | 0x00000500 - 0x00001400              | Stage2 ACM Bootloader               | 3840 bytes                        |
-| 0x00001400 - 0x0000C800              | Stage2.5 C Bootloader               | 46080 bytes (currently 44540)     |
+| 0x00001400 - 0x0000C800              | Stage2.5 C Bootloader               | 46080 bytes (currently 31868)     |
 | 0x0000C800 - 0x0000FFFF - stack size | FD Buffer (during stage2)           | <= 14335 bytes                    |
 | stack size - 0x0000FFFF              | Stage 2 RT mode stack               | x bytes (grows from 0x0ffff down) |
 | 0x0000FFFF - 0x000A0000              | Unused                              | 589825 bytes ~= 0.58MB            |

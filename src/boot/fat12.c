@@ -799,6 +799,4 @@ void fdd_initialize() {
     } else {
         print_string("Kernel file not found\n");
     }
-
-    // todo, parse the FAT, find the kernel.bin file, load it to 0x00100000, and jump to it
 }
