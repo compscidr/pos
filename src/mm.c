@@ -1,8 +1,8 @@
 #include "common.h"
 #include "screen.h"
 
-void * mem = (void*)0x100000;			/* the address where we start giving out memory from */
-void * lim = (void*)0x3FFFFF;			/* the end address of the malloc space */
+void * mem = (void*)0x1000000;			/* the address where we start giving out memory from */
+void * lim = (void*)0x3FFFFFF;			/* the end address of the malloc space */
 
 /*
  * allocates an entire page (4096 bytes) in kernel memory space and returns
