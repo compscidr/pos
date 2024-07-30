@@ -38,46 +38,51 @@ continue execution. At this point, it will start loading the 1st stage
 bootloader using the legacy bios.
 
 ## Memory Map
-Stage 1:
+### Stage 1:
 
 | Address                       | Function                              | Size                |
 |-------------------------------|---------------------------------------|---------------------|
 | 0x0000 - 0x04FF               | BIOS Functions                        | 1280 bytes          |
-| 0x0500 - 0x7BFF               | Stage2 Bootloader to be loaded here   | <= 30464 bytes      |
+| 0x0500 - 0x1400               | Stage2 Bootloader to be loaded here   | 3840 bytes          |
+| 0x1400 - 0x7BFF               | unused                                | 26623 bytes         |
 | 0x7C00 - 0x7DFF               | Stage1 Bootloader loaded here by bios | 512 bytes           |
 | 0x7E00 - 0x7E00               | FD Buffer (during stage1)             | 16896 bytes - stack |
 | 0x7E00 + stage2 size - 0xFFFF | Stage 1 & Stage 2 Stack               | x bytes             |
 
-In practice, stage2 is only a little bit more than 1 sector, ie) 512 bytes.
+Stage two is currently slightly more than 1 sector (its 566 bytes). TODO, should implement an error / warning if it
+becomes larger than 3840 bytes.
 
-Stage 2 and Beyond:
+### Stage 2:
 
-| Address                              | Function                            | Size                              |
-|--------------------------------------|-------------------------------------|-----------------------------------|
-| 0x00000000 - 0x00000500              | Bios Functions                      | 1280 bytes                        |
-| 0x00000500 - 0x00001400              | Stage2 ACM Bootloader               | 3840 bytes                        |
-| 0x00001400 - 0x0000C800              | Stage2.5 C Bootloader               | 46080 bytes (currently 31868)     |
-| 0x0000C800 - 0x0000FFFF - stack size | FD Buffer (during stage2)           | <= 14335 bytes                    |
-| stack size - 0x0000FFFF              | Stage 2 RT mode stack               | x bytes (grows from 0x0ffff down) |
-| 0x0000FFFF - 0x000A0000              | Unused                              | 589825 bytes ~= 0.58MB            |
-| 0x000A0000 - 0x000B0000              | EGA/VGA Memory Graphics Mode        | 65536 bytes                       |
-| 0x000B0000 - 0x000B8000              | Mono Text Mode                      | 32768 bytes                       |
-| 0x000B8000 - 0x000C0000              | Color Text Mode / CGA Graphics Mode | 32768 bytes                       |
-| 0x00C00000 - 0x00100000              | Unused                              | 11534336 bytes ~= 11.5MB          |
-| 0x00100000 - 0x01000000              | Kernel (TODO)                       | 14680064 bytes ~= 14MB            |
-| 0x01000000 - 0x04000000              | Malloc memory area                  | 50331648 bytes ~= 50MB            |
-| 0x04000000 - 0x08000000              | Stage2 PMode / OS Stack             | 67108864 bytes ~= 67MB            |
-| 0x08000000 - 0xFFFFFFFF              | Unused                              | 4160749568 bytes ~= 4160 MB       |
+| Address                              | Function              | Size                              |
+|--------------------------------------|-----------------------|-----------------------------------|
+| 0x00000000 - 0x00000500              | Bios Functions        | 1280 bytes                        |
+| 0x00000500 - 0x00001400              | Stage2 ASM Bootloader | 3840 bytes                        |
+| 0x00001400 - 0x0000C800              | Stage2.5 C Bootloader | 46080 bytes (currently 31868)     |
+| 0x0000C800 - 0x0000FFFF - stack size | FD Buffer             | <= 14335 bytes                    |
+| stack size - 0x0000FFFF              | Stage 2 RT mode stack | x bytes (grows from 0x0ffff down) |
 
-Total Required = 128MB
+Stage 2.5 is currently 31836 bytes. TODO, should implement an error / warning if it becomes larger than 46080 bytes. 
 
-NB: can only move FD buffer to 0x8000 if the second stage <= 512 bytes. Right now its slightly more.
+### Stage 2.5:
 
-NB: can't put anything above 0xFFFF during stage2 until after pmode switch. This means we're limited to a
-kernel which is way less than 65k. Currently its at around 40k, so we'll be in trouble soon. If it gets
-much over 40k, the kernel will collide with the FD buffer and everything will break.
+| Address                              | Function                            | Size                        |
+|--------------------------------------|-------------------------------------|-----------------------------|
+| 0x00000000 - 0x000A0000              | Low Mem Malloc? (DMA etc)           | 655360 bytes ~= 0.65MB      |
+| 0x000A0000 - 0x000B0000              | EGA/VGA Memory Graphics Mode        | 65536 bytes                 |
+| 0x000B0000 - 0x000B8000              | Mono Text Mode                      | 32768 bytes                 |
+| 0x000B8000 - 0x000C0000              | Color Text Mode / CGA Graphics Mode | 32768 bytes                 |
+| 0x00C00000 - 0x00100000              | Unused                              | 11534336 bytes ~= 11.5MB    |
+| 0x00100000 - 0x01000000              | Kernel                              | 14680064 bytes ~= 14MB      |
+| 0x01000000 - 0x04000000              | Malloc memory area                  | 50331648 bytes ~= 50MB      |
+| 0x04000000 - 0x08000000              | Stage2 PMode / OS Stack             | 67108864 bytes ~= 67MB      |
+| 0x08000000 - 0xFFFFFFFF              | Unused                              | 4160749568 bytes ~= 4160 MB |
 
-One thing we might do is load parts of it, switch to pmode, move it to high mem, switch back to 
-real mode (to use int 13 services) and then load more, and repeat.
+Originally we only had 2 stages, and we loaded the entire kernel under 0xFFFF using the INT13 bios disk functions, 
+however, this left only around 40k for the kernel, which eventually ran out. To fix this, we added a 2.5 stage. The
+2nd stage only job is to load the stage2.5 into memory at 0x1400, and move into protected mode which sets up the IDT and
+GDT. The stage2.5 then implements a fat12 filesystem and loads the kernel into memory at 0x100000.
 
-I tried messing with unreal mode, but that didn't seem to work. Ideally we should probably put the
+We now have room for a 14MB kernel, which should be fine for the short term future. The plan is to start moving some of
+the utility functions into the file system, and only load them when needed, which should help to keep the kernel size 
+down.
