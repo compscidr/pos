@@ -7,7 +7,8 @@ kind of thing to work
 It was originally started during my PhD, way back in 2009 where I worked
 on it on and off for a couple of years before I got too busy with a 
 robotics company and a mesh networking company to continue it, but I am
-resurrecting it now as a hobby.
+resurrecting it now as a hobby. It's mostly just something for me to learn
+about implementing drivers, filesystems, and other low level stuff.
 
 For easy testing, it is setup to work inside of bochs, qemu or
 virtualbox so that it can be run locally on the machine without having
@@ -27,11 +28,13 @@ following packages:
 ```make``` will compile the first stage bootload
 
 ## Testing in QEMU
-Since POS currently only supports rtl8139, it is recommended to use qemu with the network device specified as follows. It is also possible to log the packets to a network dump for debugging after the run.
+Since POS currently only supports rtl8139, it is recommended to use qemu with the network device specified as follows.
+It is also possible to log the packets to a network dump for debugging after the run.
 ```qemu-system-i386 -drive file=build/floppy.img,format=raw,if=floppy -net nic,model=rtl8139 -net user,id=u1 -object filter-dump,id=f1,netdev=u1,file=networkdump.dat```
 
 ## Testing in Bochs
-Currently, bochs only supports the ne2000 network card - this is still a TODO item, so it is not able to use the networking features - but can be used to test non-network stuff.
+Currently, bochs only supports the ne2000 network card - this is still a TODO item, so it is not able to use the 
+networking features - but can be used to test non-network stuff.
 ```bochs```
 When you run bochs, it will start and wait for you to type ```c``` to
 continue execution. At this point, it will start loading the 1st stage
