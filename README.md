@@ -89,3 +89,6 @@ GDT. The stage2.5 then implements a fat12 filesystem and loads the kernel into m
 We now have room for a 14MB kernel, which should be fine for the short term future. The plan is to start moving some of
 the utility functions into the file system, and only load them when needed, which should help to keep the kernel size 
 down.
+
+TODO: need to locate the GDT and IDT to fixed locations in memory so that we don't accidentally overwrite them and
+cause a reset / panic.
